@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        .response {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Submit Data</h1>
+    <form id="dataForm">
+        <label for="dataInput">Enter Data:</label>
+        <input type="text" id="dataInput" name="data" required>
+        <button type="submit">Submit</button>
+    </form>
+    <div id="response" class="response"></div>
+
+    <script>
+        document.getElementById('dataForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            
+            const dataInput = document.getElementById('dataInput').value;
+            const responseDiv = document.getElementById('response');
+
+            try {
+                const response = await fetch('http://localhost:3000/handle-prompt', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ prompt: dataInput })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+
+                const result = await response.json();
+                responseDiv.innerHTML = `<p>Server Response: ${JSON.stringify(result)}</p>`;
+            } catch (error) {
+                responseDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
